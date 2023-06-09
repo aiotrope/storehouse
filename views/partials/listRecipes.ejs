@@ -1,0 +1,19 @@
+<% globRecipesVar.forEach(function(element) { %>
+    <h2><a href="/recipe/<%= element.name %>"><%- element.name %></a></h2>
+    <h3>Ingredients</h3>
+    <ul class="nav-mobile">
+        <% element.ingredients.map((el)=>{ %>
+            <li>
+                <%= el %>
+            </li>
+            <% }) %>
+    </ul>
+    <h3>Instructions</h3>
+    <ul class="nav-mobile" style="padding-left: 1rem;">
+        <% element.instructions.map((el)=>{ %>
+            <li>
+                <%= el %>
+            </li>
+            <% }) %>
+    </ul>
+<% })%>

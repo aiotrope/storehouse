@@ -1,0 +1,45 @@
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="shortcut icon" href="#">
+    <script src="/javascripts/createRecipe.js" defer></script>
+</head>
+
+<body>
+    <nav>
+        <%- include('./partials/header'); %>
+    </nav>
+    <div class="container">
+        <div class="col">
+            <h2><a href="/recipe/<%- name %>"><%- name %></a></h2>
+            <h3>Ingredients</h3>
+            <ul class="nav-mobile">
+
+                <% ingredients.forEach(function(ingredient, indx) { %>
+                    <li>
+                        <%= ingredient %>
+                    </li>
+                    <% }) %>
+            </ul>
+
+            <h3>Instructions</h3>
+            <ul class="nav-mobile">
+                <% for (let i=0; i < instructions.length; i++) {%>
+                    <li>
+                        <%= instructions[i] %>
+                    </li>
+                    <% } %>
+            </ul>
+        </div>
+        <div class="col">
+            <%- include('./partials/createRecipe'); %>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+
+</html>

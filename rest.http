@@ -1,0 +1,16 @@
+### create recipe
+POST http://localhost:3000/recipe/
+Content-Type: application/json
+
+{
+   "name": "pasta",
+   "ingredient": ["tomato sauce"],
+   "instruction": ["sautee"]
+  
+}
+
+### fetch recipe
+GET http://localhost:3000/recipe/pasta
+
+### fetch recipe
+GET http://localhost:3000/recipe/
