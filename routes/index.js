@@ -1,71 +1,66 @@
 const express = require('express')
-const axios = require('axios')
+//const axios = require('axios')
 const path = require('path')
+
+const Recipe = require('../models/recipe')
+//const config = require('../utils/config')
+//const BASE_URL = config.base_url
 
 const router = express.Router()
 
-router.get('/recipe', (req, res) => {
-  let Recipes = req.app.get('Recipes')
-  res.json({ ...Recipes })
+// eslint-disable-next-line no-unused-vars
+router.get('/recipe', async (req, res) => {
+  const response = await Recipe.findOne({}).sort({ createdAt: -1 })
+  res.status(200).json(response)
 })
 
-router.get('/recipe/:food', (req, res) => {
-  let Recipes = req.app.get('Recipes')
+router.get('/recipe/:food', async (req, res) => {
   let { food } = req.params
+  let recipe = await Recipe.findOne({ name: food })
   const partial = req.app.get('partialObj')
-  let recipeObj = Recipes.find((element) => element.name === food)
-  if (!recipeObj) {
-    recipeObj = {
-      name: food,
-      ...partial,
-    }
+
+  //console.log(recipe)
+
+  if (!recipe) {
+    res.status(200).json({ name: food, ...partial })
   }
 
-  if (req.header('Accept').includes('application/json')) {
-    res.json(recipeObj)
-  } else {
-    res.render('recipe', {
-      title: 'Recipes',
-      ...recipeObj,
-    })
+  const data = {
+    name: recipe?.name,
+    ingredients: recipe?.ingredients,
+    instructions: recipe?.instructions,
   }
+
+  res.render('recipe', {
+    title: 'Recipes',
+    ...data,
+  })
 })
 
-router.get('/', (req, res) => {
-  let Recipes = req.app.get('Recipes')
-  let recipe = Recipes[0]
-
-  axios(`http://localhost:3000/recipe/${recipe.name}`)
-    .then((response) => {
-      //console.log(response.data);
-      res.render('recipe', { title: 'Recipes', ...response.data })
-    })
-    .catch((e) => console.error(e))
+router.get('/', async (req, res) => {
+  const recipes = await Recipe.find({}).sort({ createdAt: -1 })
+  res.render('recipe', { title: 'Recipes', recipes: recipes })
 })
 
-router.post('/recipe/', (req, res) => {
-  let Recipes = req.app.get('Recipes')
+router.post('/recipe/', async (req, res) => {
   let { name, instruction, ingredient } = req.body
 
-  //console.log(images);
-  let data = {
-    name: name,
-    ingredients: ingredient,
-    instructions: instruction,
-  }
-
-  Recipes.unshift(data)
-
-  let newRecipe = Recipes.find((element) => element.name === name)
-
-  if (newRecipe) {
-    res.send({
-      ...newRecipe,
+  try {
+    let data = new Recipe({
+      name: name,
+      ingredients: ingredient,
+      instructions: instruction,
     })
+
+    const recipe = await Recipe.create(data)
+
+    res.status(201).json(recipe)
+  } catch (err) {
+    console.error(err)
   }
 })
 
-router.post('/images', (req, res) => {
+router.post('/images', async (req, res) => {
   let { recipe } = req.body
   let { images } = req.files
   //console.log(req.files.path);

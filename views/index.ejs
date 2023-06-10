@@ -5,30 +5,28 @@
   <title>
     <%= title %>
   </title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link rel="shortcut icon" href="#">
 </head>
 
 <body>
   <%- name %>
-  <ul>
+    <ul>
 
       <% ingredients.forEach(function(ingredient, indx) { %>
-          <li>
-              <%= ingredient %>
-          </li>
-          <% }) %>
-  </ul>
+        <li>
+          <%= ingredient %>
+        </li>
+        <% }) %>
+    </ul>
 
-  <ul>
+    <ul>
       <% for (let i=0; i < instructions.length; i++) {%>
-          <li>
-              <%= instructions[i] %>
-          </li>
-          <% } %>
-  </ul>
-</div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <li>
+          <%= instructions[i] %>
+        </li>
+        <% } %>
+    </ul>
+    </div>
 </body>
 
 </html>

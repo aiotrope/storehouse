@@ -53,10 +53,18 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static('uploads'))
 app.use(cors())
-app.use(helmet())
 app.use(fileupload())
 app.use(require('sanitize').middleware)
 app.use(mongoSanitize())
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        'script-src': ["'self'", 'https://cdnjs.cloudflare.com'],
+      },
+    },
+  })
+)
 
 app.use('/', indexRouter)
 
