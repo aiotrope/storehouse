@@ -9,6 +9,20 @@ const RecipeSchema = new mongoose.Schema(
     },
     ingredients: [{ type: String, trim: true }],
     instructions: [{ type: String, trim: true }],
+    images: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image',
+        required: true,
+      },
+    ],
+    categories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },

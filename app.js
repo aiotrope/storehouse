@@ -4,9 +4,9 @@ const path = require('path')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 const cors = require('cors')
-const helmet = require('helmet')
 const fileupload = require('express-fileupload')
 const mongoSanitize = require('express-mongo-sanitize')
+const session = require('express-session')
 
 const dbConnection = require('./utils/db')
 
@@ -14,35 +14,8 @@ const indexRouter = require('./routes/index')
 
 const app = express()
 
-var partialObj = {
-  ingredients: [
-    '12 large guajillo chiles',
-    '1/4 cup corn masa harina',
-    '1/4 cup unsalted peanuts',
-    '1/4 cup raisins',
-    '1 whole clove',
-  ],
-  instructions: [
-    'Gather the ingredients.',
-    'Make the Mole Base',
-    'Mix and Cook the Mole',
-  ],
-}
-
-var Recipes = [
-  {
-    name: 'Mole',
-    ...partialObj,
-  },
-]
-
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
-
-// global var
-app.set('Recipes', Recipes)
-app.set('partialObj', partialObj)
-app.locals.globRecipesVar = Recipes
 
 dbConnection()
 
@@ -51,18 +24,17 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
-app.use('/uploads', express.static('uploads'))
+app.use(express.static(path.join(__dirname, 'uploads')))
+//app.use('/uploads', express.static('uploads'))
 app.use(cors())
 app.use(fileupload())
 app.use(require('sanitize').middleware)
 app.use(mongoSanitize())
 app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        'script-src': ["'self'", 'https://cdnjs.cloudflare.com'],
-      },
-    },
+  session({
+    secret: 'nail stubbly numbness',
+    resave: false,
+    saveUninitialized: true,
   })
 )
 

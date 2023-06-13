@@ -1,5 +1,5 @@
 {
-  "name": "recipes",
+  "name": "storehouse",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -19,7 +19,7 @@
     "express": "^4.18.2",
     "express-fileupload": "^1.4.0",
     "express-mongo-sanitize": "^2.2.0",
-    "helmet": "^7.0.0",
+    "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
     "mongoose": "^7.2.2",
     "morgan": "~1.9.1",

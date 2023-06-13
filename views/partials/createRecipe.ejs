@@ -1,19 +1,46 @@
-<form id="create-form" enctype="multipart/form-data" method="POST">
-    <label for="name">Name</label>
-    <input type="text" id="name-text" name="name">
-    <h4>Ingredients</h4>
-    <textarea id="ingredients-text" class="materialize-textarea"></textarea>
-    <button id="add-ingredient" type="button" class="btn">Add ingredient</button>
-    <br />
-    <p id="as-ingredient"></p>
-    <h4>Instructions</h4>
-    <textarea id="instructions-text" class="materialize-textarea"></textarea>
-    <button id="add-instruction" type="button" class="btn">Add instruction</button>
-    <br />
-    <p id="as-instruction"></p><br>
-    <h4>Image</h4>
-    <input id="image-input" type="file" name="images" accept="image/*" multiple><br><br>
+<form method="POST" action="/recipe/" enctype="multipart/form-data" id="create-form" style="margin-bottom: 5rem;">
+    <div class="row">
+        <div class="input-field col s6">
+            <input type="text" id="name-text" name="name">
+            <label class="active" for="name">Name</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s6">
+            <input type="text" id="ingredients-text" name="ingredient">
+            <label class="active" for="ingredient">Ingredients</label>
+            <button id="add-ingredient" type="button" class="btn">ADD</button>
+            <p id="as-ingredient"></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s6">
+            <input type="text" id="instructions-text" name="instruction">
+            <label class="active" for="instruction">Instruction</label>
+            <button id="add-instruction" type="button" class="btn">ADD</button>
+            <p id="as-instruction"></p>
+        </div>
 
+    </div>
+    <div class="file-field input-field">
+        <div class="btn">
+            <span>OPEN CAMERA</span>
+            <input id="image-input" type="file" name="images" accept="image/*" multiple name="images">
+        </div>
+        <div class="file-path-wrapper">
+            <input class="file-path validate" type="text">
+        </div>
+    </div>
+    <fieldset style="margin-bottom: 2rem;">
+        <legend>Categories</legend>
+        <% categories.forEach(function(element) { %>
+            <label for="<%- element.name %>">
+                <input type="checkbox" id="<%- element.name %>" name="<%- element.name %>" />
+                <span><%- element.name %></span>
+            </label><br>
+            <% })%>
+    </fieldset>
     <button id="submit" type="submit" class="btn">Submit</button>
+
+
 </form>
-<section id="save-recipe-response" class="section"></section>
