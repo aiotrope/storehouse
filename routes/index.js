@@ -25,7 +25,16 @@ const router = express.Router()
  */
 router.get('/recipe/', async (req, res) => {
   try {
-    const recipes = await Recipe.find({}).sort({ createdAt: -1 })
+    const recipes = await Recipe.find({})
+      .populate('images', {
+        id: 1,
+        name: 1,
+        encoding: 1,
+        mimetype: 1,
+        buffer: 1,
+      })
+      .populate('categories', { id: 1, name: 1 })
+      .sort({ createdAt: -1 })
     res.status(200).json(recipes)
   } catch (error) {
     console.error(error.message)
@@ -36,6 +45,15 @@ router.get('/recipe/:food', async (req, res) => {
   let { food } = req.params
   try {
     let recipe = await Recipe.findOne({ name: food })
+      .populate('images', {
+        id: 1,
+        name: 1,
+        encoding: 1,
+        mimetype: 1,
+        buffer: 1,
+      })
+      .populate('categories', { id: 1, name: 1 })
+
     res.status(200).json(recipe)
   } catch (error) {
     console.error(error.message)
@@ -68,10 +86,16 @@ router.post('/recipe/', async (req, res) => {
       name: name,
       instructions: instruction,
       ingredients: ingredient,
-      categories: dietCategory,
+      //categories: dietCategory,
     })
 
     const newRecipe = await Recipe.create(data)
+
+    for (let category of dietCategory) {
+      const categories = await Category.findOne({ name: category })
+      newRecipe.categories = newRecipe.categories.concat(categories)
+      await newRecipe.save()
+    }
 
     //res.cookie('recipeName', newRecipe.name)
     req.session.recipeName = newRecipe.name
@@ -139,31 +163,5 @@ router.get('/categories', async (req, res) => {
     console.error(error.message)
   }
 })
-
-/* router.post('/categories', async (req, res) => {
-  let { special_diet } = req.body
-  try {
-    const data = new Category({
-      name: special_diet,
-    })
-    const newCategory = await Category.create(data)
-
-    const currentRecipe = req.session.recipeName
-
-    const foundRecipe = await Recipe.findOne({ name: currentRecipe })
-
-    if (foundRecipe) {
-      foundRecipe.categories = foundRecipe.categories.concat(newCategory)
-
-      await foundRecipe.save()
-
-      res.status(200).json({
-        ...newCategory,
-      })
-    }
-  } catch (error) {
-    console.error(error.message)
-  }
-}) */
 
 module.exports = router

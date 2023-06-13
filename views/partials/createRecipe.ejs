@@ -23,19 +23,20 @@
 
     </div>
     <div class="file-field input-field">
-        <div class="btn">
+        <div class="btn" id="add-image">
             <span>OPEN CAMERA</span>
             <input id="image-input" type="file" name="images" accept="image/*" multiple name="images">
         </div>
         <div class="file-path-wrapper">
             <input class="file-path validate" type="text">
         </div>
+        <p id="as-image"></p>
     </div>
     <fieldset style="margin-bottom: 2rem;">
         <legend>Categories</legend>
         <% categories.forEach(function(element) { %>
             <label for="<%- element.name %>">
-                <input type="checkbox" id="<%- element.name %>" name="<%- element.name %>" />
+                <input type="checkbox" id="<%- element.name %>" name="text" value="<%- element.name %>" />
                 <span><%- element.name %></span>
             </label><br>
             <% })%>

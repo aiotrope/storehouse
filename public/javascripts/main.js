@@ -3,11 +3,15 @@
 
 var ingredientsArr = []
 var instructionsArr = []
-//var dietArr = []
+var imagesArr = []
+var dietArr = []
 var renderRecipes = document.querySelector('#render-recipes')
 var asIngredient = document.getElementById('as-ingredient')
 var asInstruction = document.getElementById('as-instruction')
 var search = document.querySelector('#search')
+const inputName = document.querySelector('#name-text')
+var images = document.querySelector('#image-input')
+var dietCheckboxes = document.getElementsByName('text')
 
 const saveForm = document.querySelector('#create-form')
 
@@ -27,7 +31,18 @@ const captureInstruction = () => {
   document.getElementById('instructions-text').value = ''
 }
 
-/* const captureSpecialDiet = () => {
+const captureImage = () => {
+  let inputImage = document.querySelector('#image-input').files
+  imagesArr.push(inputImage)
+  //console.log(imagesArr)
+  let asImage = document.getElementById('as-image')
+  /* for (var i = 0; i < inputImage.length; i++) {
+    alert(inputImage[i].name)
+  } */
+  asImage.innerHTML = inputImage.name
+}
+
+/* const capturediet = () => {
   let inputDiet = document.querySelector('#text').value
   dietArr.push(inputDiet)
 } */
@@ -38,12 +53,14 @@ document
 document
   .getElementById('add-instruction')
   .addEventListener('click', captureInstruction)
+document.getElementById('image-input').addEventListener('click', captureImage)
 
 const clearForm = () => {
   saveForm.reset()
   ingredientsArr.length = 0
   instructionsArr.length = 0
-  specialDietArrArr.length = 0
+  imagesArr.length = 0
+  dietArr.length = 0
   asIngredient.innerHTML = ''
   asInstruction.innerHTML = ''
 }
@@ -112,19 +129,20 @@ const uploadImage = async (formData) => {
 
 saveForm.addEventListener('submit', async (event) => {
   event.preventDefault()
-  const inputName = document.querySelector('#name-text')
-  const images = document.querySelector('#image-input')
-  const dietInput = document.querySelector('#special-diet')
   const formData = new FormData()
+
+  // diet checkboxes
+  for (let i = 0; i < dietCheckboxes.length; i++) {
+    if (dietCheckboxes[i].checked) {
+      dietArr.push(dietCheckboxes[i].value)
+    }
+  }
 
   let data = {
     name: inputName.value,
     ingredient: ingredientsArr,
     instruction: instructionsArr,
-  }
-
-  let category = {
-    dietCategory: dietInput.value,
+    dietCategory: dietArr
   }
 
   formData.append('recipe', inputName.value)
