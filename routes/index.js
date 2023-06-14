@@ -117,13 +117,45 @@ router.get('/images', async (req, res) => {
 router.post('/images', async (req, res) => {
   let { images } = req.files
   //console.log(req.files)
-  let uploadPath
+  let uploadPath = path.resolve('./uploads') + '/recipe-' + images.name
+  images.mv(uploadPath)
+  let newImgData = new Image({
+    name: images.name,
+    encoding: images.encoding,
+    mimetype: images.mimetype,
+    buffer: images.data,
+  })
 
-  if (!images || Object.keys(images).length === 0) {
-    return res.status(400).send('No files were uploaded.')
+  console.log('IMG:', images)
+
+  const newImage = await Image.create(newImgData)
+  const currentRecipe = req.session.recipeName
+  const foundRecipe = await Recipe.findOne({ name: currentRecipe })
+  if (foundRecipe) {
+    foundRecipe.images = foundRecipe.images.concat(newImage)
+
+    await foundRecipe.save()
+
+    return res.status(200).json({
+      result: 'File image uploaded.',
+      ...newImage,
+    })
   }
+})
 
-  if (images.length) {
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await Category.find({})
+    res.status(200).json(categories)
+  } catch (error) {
+    console.error(error.message)
+  }
+})
+
+module.exports = router
+
+/*
+if (images.length) {
     Object.values(images).forEach(async (values) => {
       uploadPath = path.resolve('./uploads') + '/recipe-' + values.name
       values.mv(uploadPath)
@@ -144,53 +176,7 @@ router.post('/images', async (req, res) => {
         return res.send('Files uploaded.')
       }
     })
-  } else if (images) {
-    uploadPath = path.resolve('./uploads') + '/recipe-' + images.name
-    let newImgData = new Image({
-      name: images.name,
-      encoding: images.encoding,
-      mimetype: images.mimetype,
-      buffer: images.data,
-    })
-
-    const newImage = await Image.create(newImgData)
-    const currentRecipe = req.session.recipeName
-    const foundRecipe = await Recipe.findOne({ name: currentRecipe })
-    if (foundRecipe) {
-      foundRecipe.images = foundRecipe.images.concat(newImage)
-
-      await foundRecipe.save()
-
-      return res.status(200).json({
-        result: 'File image uploaded.',
-        ...newImage,
-      })
-    }
   }
-})
 
-router.get('/categories', async (req, res) => {
-  try {
-    const categories = await Category.find({})
-    res.status(200).json(categories)
-  } catch (error) {
-    console.error(error.message)
-  }
-})
-
-module.exports = router
-
-/*
-for (let i = 0; i < images.length; i++) {
-      uploadPath = path.resolve('./uploads') + '/recipe-' + images[i].name
-      images[i].mv(uploadPath)
-      let data = {
-        name: images[i].name,
-        encoding: images[i].encoding,
-        mimetype: images[i].mimetype,
-        buffer: images[i].data,
-      }
-      await Image.insertMany([data])
-    }
 
 */

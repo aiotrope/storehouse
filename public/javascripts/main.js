@@ -124,7 +124,7 @@ const uploadImage = async (formData) => {
     const result = await response.json()
     console.log('Success:', result)
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error:', error.message)
   }
 }
 
