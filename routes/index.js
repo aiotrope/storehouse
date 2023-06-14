@@ -36,8 +36,9 @@ router.get('/recipe/', async (req, res) => {
       .populate('categories', { id: 1, name: 1 })
       .sort({ createdAt: -1 })
     res.status(200).json(recipes)
-  } catch (error) {
-    console.error(error.message)
+  } catch (err) {
+    console.error(err.message)
+    res.status(400).json({ error: err.message })
   }
 })
 
@@ -62,31 +63,27 @@ router.get('/recipe/:food', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    //console.log(req.cookies)
-    //req.session.destroy()
-    req.session.recipeName = ''
-    res.clearCookie('recipeName')
-    console.log(req.session.recipeName)
     const categories = await Category.find({})
     res.render('recipe', { title: 'Storehouse', categories: categories })
-  } catch (error) {
-    console.error(error.message)
+  } catch (err) {
+    console.error(err.message)
+    res.status(400).json({ error: err.message })
   }
 })
 
 router.post('/recipe/', async (req, res) => {
   let { name, instruction, ingredient, dietCategory } = req.body
 
-  if (req.session.recipeName !== name) {
+  /*  if (req.session.recipeName !== name) {
     req.session.recipeName = null
+    req.session.destroy()
   }
-
+ */
   try {
     let data = new Recipe({
       name: name,
       instructions: instruction,
       ingredients: ingredient,
-      //categories: dietCategory,
     })
 
     const newRecipe = await Recipe.create(data)
@@ -97,12 +94,13 @@ router.post('/recipe/', async (req, res) => {
       await newRecipe.save()
     }
 
-    //res.cookie('recipeName', newRecipe.name)
     req.session.recipeName = newRecipe.name
+    console.log(req.session.recipeName)
 
     res.status(200).json(newRecipe)
   } catch (err) {
     console.error(err)
+    res.status(400).json({ error: err.message })
   }
 })
 
@@ -110,48 +108,80 @@ router.get('/images', async (req, res) => {
   try {
     const images = await Image.find({}).sort({ createdAt: -1 })
     res.status(200).json(images)
-  } catch (error) {
-    console.error(error.message)
+  } catch (err) {
+    console.error(err.message)
+    res.status(400).json({ error: err.message })
   }
 })
 
 router.post('/images', async (req, res) => {
   let { images } = req.files
   //console.log(req.files)
-  let uploadPath
+  let uploadPath = path.resolve('./uploads') + '/recipe-' + images.name
+  const imgArr = []
+
+  if (!images || Object.keys(images).length === 0) {
+    return res.status(400).send('No files were uploaded.')
+  }
+
+  const uploading = (img) => {
+    try {
+      img.mv(uploadPath)
+    } catch (err) {
+      console.error(err.message)
+      res.status(400).json({ error: err.message })
+    }
+    let imgInfo = {
+      name: img.name,
+      encoding: img.encoding,
+      mimetype: img.mimetype,
+      buffer: img.data,
+    }
+    imgArr.unshift(imgInfo)
+  }
+
+  Array.isArray(images)
+    ? images.forEach((image) => uploading(image))
+    : uploading(image)
 
   try {
-    uploadPath = path.resolve('./uploads') + '/recipe-' + images.name
-    images.mv(uploadPath)
-
-    const data = new Image({
+    //uploadPath = path.resolve('./uploads') + '/recipe-' + images.name
+    //images.mv(uploadPath)
+    /*  const data = new Image({
       name: images.name,
       encoding: images.encoding,
       mimetype: images.mimetype,
       buffer: images.data,
-    })
-    const newImages = await Image.create(data)
+    }) */
 
-    const currentRecipe = req.session.recipeName
+    for (let i = 0; i < images.length; i++) {
+      images[i].mv(uploadPath) //insert in uploads dir
+      let data = [
+        {
+          name: images[i].name,
+          encoding: images[i].encoding,
+          mimetype: images[i].mimetype,
+          buffer: images[i].data,
+        },
+      ]
 
-    const foundRecipe = await Recipe.findOne({ name: currentRecipe })
+      const newImages = await Image.create(data)
+      const currentRecipe = req.session.recipeName
+      const foundRecipe = await Recipe.findOne({ name: currentRecipe })
+      if (foundRecipe) {
+        foundRecipe.images = foundRecipe.images.concat(newImages)
 
-    if (foundRecipe) {
-      foundRecipe.images = foundRecipe.images.concat(newImages)
+        await foundRecipe.save()
 
-      await foundRecipe.save()
-
-      res.status(200).json({
-        result: 'File image uploaded.',
-        ...newImages,
-      })
+        res.status(200).json({
+          result: 'File image uploaded.',
+          ...newImages,
+        })
+      }
     }
-
-    if (!images || Object.keys(images).length === 0) {
-      return res.status(400).send('No files were uploaded.')
-    }
-  } catch (error) {
-    console.error(error.message)
+  } catch (err) {
+    console.error(err.message)
+    res.status(400).json({ error: err.message })
   }
 })
 

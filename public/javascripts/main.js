@@ -3,7 +3,7 @@
 
 var ingredientsArr = []
 var instructionsArr = []
-var imagesArr = []
+//var imagesArr = []
 var dietArr = []
 var renderRecipes = document.querySelector('#render-recipes')
 var asIngredient = document.getElementById('as-ingredient')
@@ -31,16 +31,16 @@ const captureInstruction = () => {
   document.getElementById('instructions-text').value = ''
 }
 
-const captureImage = () => {
-  let inputImage = document.querySelector('#image-input').files
-  imagesArr.push(inputImage)
-  //console.log(imagesArr)
-  let asImage = document.getElementById('as-image')
-  /* for (var i = 0; i < inputImage.length; i++) {
+//const captureImage = () => {
+//let inputImage = document.querySelector('#image-input').files
+//imagesArr.push(inputImage)
+//console.log(imagesArr)
+//let asImage = document.getElementById('as-image')
+/* for (var i = 0; i < inputImage.length; i++) {
     alert(inputImage[i].name)
   } */
-  asImage.innerHTML = inputImage.name
-}
+//asImage.innerHTML = inputImage.name
+//}
 
 /* const capturediet = () => {
   let inputDiet = document.querySelector('#text').value
@@ -53,13 +53,14 @@ document
 document
   .getElementById('add-instruction')
   .addEventListener('click', captureInstruction)
-document.getElementById('image-input').addEventListener('click', captureImage)
+
+//document.getElementById('image-input').addEventListener('click', captureImage)
 
 const clearForm = () => {
   saveForm.reset()
   ingredientsArr.length = 0
   instructionsArr.length = 0
-  imagesArr.length = 0
+  //imagesArr.length = 0
   dietArr.length = 0
   asIngredient.innerHTML = ''
   asInstruction.innerHTML = ''
@@ -142,7 +143,7 @@ saveForm.addEventListener('submit', async (event) => {
     name: inputName.value,
     ingredient: ingredientsArr,
     instruction: instructionsArr,
-    dietCategory: dietArr
+    dietCategory: dietArr,
   }
 
   formData.append('recipe', inputName.value)
@@ -152,7 +153,6 @@ saveForm.addEventListener('submit', async (event) => {
   }
   await postRecipe(data)
   await uploadImage(formData)
-  await addCategory(category)
   clearForm()
 })
 
@@ -175,6 +175,7 @@ const renderList = (arrObj) => {
     div += `<div id='list-of-recipes' key=${id}>
     <h3><a href="http://localhost:3000/recipe/${name}">${name}</a></h3>
     <h4>Ingredients</h4><ul>${ingredients
+
     .map(function (el) {
       return '<li>' + el + '</li>'
     })
