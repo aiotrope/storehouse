@@ -10,8 +10,7 @@ const ImageSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    collection: 'Images',
-    timestamps: true,
+    collection: 'Images'
   }
 )
 

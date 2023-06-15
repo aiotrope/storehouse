@@ -20,15 +20,25 @@ app.set('view engine', 'ejs')
 dbConnection()
 
 app.use(logger('dev'))
+
 app.use(express.json())
+
 app.use(express.urlencoded({ extended: true }))
+
 app.use(cookieParser())
+
 app.use(express.static(path.join(__dirname, 'public')))
+
 app.use(express.static(path.join(__dirname, 'uploads')))
+
 app.use(cors())
+
 app.use(fileupload())
+
 app.use(require('sanitize').middleware)
+
 app.use(mongoSanitize())
+
 app.use(
   session({
     secret: 'nail stubbly numbness',

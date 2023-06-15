@@ -3,7 +3,6 @@
 
 var ingredientsArr = []
 var instructionsArr = []
-//var imagesArr = []
 var dietArr = []
 var renderRecipes = document.querySelector('#render-recipes')
 var asIngredient = document.getElementById('as-ingredient')
@@ -17,35 +16,27 @@ const saveForm = document.querySelector('#create-form')
 
 const captureIngredient = () => {
   let inputIngredient = document.querySelector('#ingredients-text').value
-  ingredientsArr.push(inputIngredient)
+
   let asIngredient = document.getElementById('as-ingredient')
+
+  ingredientsArr.push(inputIngredient)
+
   asIngredient.innerHTML = [...ingredientsArr].join(' ')
+
   document.getElementById('ingredients-text').value = ''
 }
 
 const captureInstruction = () => {
   let inputInstruction = document.querySelector('#instructions-text').value
-  instructionsArr.push(inputInstruction)
+
   let asInstruction = document.getElementById('as-instruction')
+
+  instructionsArr.push(inputInstruction)
+
   asInstruction.innerHTML = [...instructionsArr].join(' ')
+
   document.getElementById('instructions-text').value = ''
 }
-
-//const captureImage = () => {
-//let inputImage = document.querySelector('#image-input').files
-//imagesArr.push(inputImage)
-//console.log(imagesArr)
-//let asImage = document.getElementById('as-image')
-/* for (var i = 0; i < inputImage.length; i++) {
-    alert(inputImage[i].name)
-  } */
-//asImage.innerHTML = inputImage.name
-//}
-
-/* const capturediet = () => {
-  let inputDiet = document.querySelector('#text').value
-  dietArr.push(inputDiet)
-} */
 
 document
   .getElementById('add-ingredient')
@@ -54,13 +45,10 @@ document
   .getElementById('add-instruction')
   .addEventListener('click', captureInstruction)
 
-//document.getElementById('image-input').addEventListener('click', captureImage)
-
 const clearForm = () => {
   saveForm.reset()
   ingredientsArr.length = 0
   instructionsArr.length = 0
-  //imagesArr.length = 0
   dietArr.length = 0
   asIngredient.innerHTML = ''
   asInstruction.innerHTML = ''
@@ -69,10 +57,13 @@ const clearForm = () => {
 const fetchAndSetAllRecipes = async () => {
   try {
     const response = await fetch('http://localhost:3000/recipe/')
+
     const data = await response.json()
+
     if (response.status === 200 && data) {
       // clone array
       let clone = await JSON.parse(JSON.stringify(data))
+
       renderList(clone)
     }
   } catch (error) {
@@ -81,21 +72,6 @@ const fetchAndSetAllRecipes = async () => {
 }
 
 fetchAndSetAllRecipes()
-
-const fetchAndSetAllCategories = async () => {
-  try {
-    const response = await fetch('http://localhost:3000/categories')
-    const data = await response.json()
-    if (response.status === 200 && data) {
-      //let clone = await JSON.parse(JSON.stringify(data))
-      //renderList(clone)
-    }
-  } catch (error) {
-    console.error('Error fetching recipes: ', error.message)
-  }
-}
-
-fetchAndSetAllCategories()
 
 const postRecipe = async (data) => {
   try {
@@ -130,6 +106,7 @@ const uploadImage = async (formData) => {
 
 saveForm.addEventListener('submit', async (event) => {
   event.preventDefault()
+
   const formData = new FormData()
 
   // diet checkboxes
@@ -152,15 +129,20 @@ saveForm.addEventListener('submit', async (event) => {
     formData.append('images', images.files[i])
   }
   await postRecipe(data)
+
   await uploadImage(formData)
+
   clearForm()
 })
 
 search.addEventListener('change', async (event) => {
   let userInput = event.target.value
+
   try {
     const response = await fetch(`http://localhost:3000/recipe/${userInput}`)
+
     const data = await response.json()
+
     if (response.status === 200 && data) {
       renderSearch(data)
     }
@@ -171,6 +153,7 @@ search.addEventListener('change', async (event) => {
 
 const renderList = (arrObj) => {
   let div = ``
+
   Object.values(arrObj).forEach(({ id, name, instructions, ingredients }) => {
     div += `<div id='list-of-recipes' key=${id}>
     <h3><a href="http://localhost:3000/recipe/${name}">${name}</a></h3>
@@ -193,6 +176,7 @@ const renderList = (arrObj) => {
 
 const renderSearch = (data) => {
   let div = ``
+
   div += `<div id='search-result'>
     <h3><a href="http://localhost:3000/recipe/${data.name}">${
   data.name

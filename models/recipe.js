@@ -28,7 +28,6 @@ const RecipeSchema = new mongoose.Schema(
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
     collection: 'Recipes',
-    timestamps: true,
   }
 )
 

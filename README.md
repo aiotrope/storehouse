@@ -42,9 +42,9 @@ $ db.createCollection("collection_name")
 $ show collections
 
 # insert docs to collection
-$ db.collection_name.insert({objects})
+$ db.collection_name.insertMany({objects})
 
 # show all collection docs
 $ db.collection_name.find()
 
-```# storehouse
+```
