@@ -45,7 +45,7 @@ router.get('/recipe/:food', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const categories = await Category.find({})
-    res.render('recipe', { title: 'Storehouse', categories: categories })
+    res.render('recipe', { title: 'Recipes', categories: categories })
   } catch (err) {
     console.error(err.message)
     res.status(400).json({ error: err.message })

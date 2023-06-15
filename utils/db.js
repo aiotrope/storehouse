@@ -1,9 +1,6 @@
 const mongoose = require('mongoose')
-const config = require('./config')
 
 const Recipe = require('../models/recipe')
-
-let dbURL
 
 const opts = {
   autoIndex: true,
@@ -14,7 +11,7 @@ const opts = {
 const dbConnection = async () => {
   mongoose.set('strictQuery', false)
 
-  dbURL = config.mongo_url || 'mongodb://127.0.0.1:27017/testdb'
+  const dbURL = 'mongodb://127.0.0.1:27017/testdb'
 
   mongoose.connect(dbURL, opts)
 
