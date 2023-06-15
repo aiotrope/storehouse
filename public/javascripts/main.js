@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 'use strict'
 
+var recipesArr = []
 var ingredientsArr = []
 var instructionsArr = []
 var dietArr = []
@@ -64,7 +65,9 @@ const fetchAndSetAllRecipes = async () => {
       // clone array
       let clone = await JSON.parse(JSON.stringify(data))
 
-      renderList(clone)
+      recipesArr = clone
+
+      renderList(recipesArr)
     }
   } catch (error) {
     console.error('Error fetching recipes: ', error.message)
@@ -84,8 +87,13 @@ const postRecipe = async (data) => {
     })
 
     const result = await response.json()
-    console.log('Success:', result)
+
+    recipesArr.push(result)
+
+    renderList(recipesArr)
+
     return result
+
   } catch (error) {
     console.error('Error:', error)
   }

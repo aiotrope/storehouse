@@ -55,11 +55,6 @@ router.get('/', async (req, res) => {
 router.post('/recipe/', async (req, res) => {
   let { name, instruction, ingredient, dietCategory } = req.body
 
-  /*  if (req.session.recipeName !== name) {
-    req.session.recipeName = null
-    req.session.destroy()
-  }
- */
   try {
     let data = new Recipe({
       name: name,
@@ -77,8 +72,9 @@ router.post('/recipe/', async (req, res) => {
       await newRecipe.save()
     }
 
-    req.session.recipeName = newRecipe.name
-    console.log(req.session.recipeName)
+    res.cookie('recipeName', newRecipe.name)
+
+    //console.log(req.cookies.recipeName)
 
     res.status(200).json(newRecipe)
   } catch (err) {
@@ -120,7 +116,7 @@ router.post('/images', async (req, res) => {
 
     const newImages = await Image.create(data)
 
-    const currentRecipe = req.session.recipeName
+    const currentRecipe = req.cookies.recipeName
 
     const foundRecipe = await Recipe.findOne({ name: currentRecipe })
 
@@ -146,7 +142,7 @@ router.get('/images/:imageId', async (req, res) => {
   try {
     let image = await Image.findById(imageId)
 
-    req.session.imageName = image.name
+    res.cookie('imageName', image.name)
 
     let imgDiv = `<div id="images"><img src='http://localhost:3000/recipe-${image.name}' /><br><br><a href="/download">Download</a></div>`
 
@@ -159,7 +155,7 @@ router.get('/images/:imageId', async (req, res) => {
 
 router.get('/download', (req, res) => {
   const downloadPath =
-    path.resolve('./uploads') + '/recipe-' + req.session.imageName
+    path.resolve('./uploads') + '/recipe-' + req.cookies.imageName
   //res.download(downloadPath)
 
   const filename = path.basename(downloadPath)
@@ -186,30 +182,3 @@ router.get('/categories', async (req, res) => {
 })
 
 module.exports = router
-
-/*
-if (images.length) {
-    Object.values(images).forEach(async (values) => {
-      uploadPath = path.resolve('./uploads') + '/recipe-' + values.name
-      values.mv(uploadPath)
-      let data = {
-        name: values.name,
-        encoding: values.encoding,
-        mimetype: values.mimetype,
-        buffer: values.data,
-      }
-      let docs = await Image.insertMany([data])
-      if (docs) {
-        const currentRecipe = req.session.recipeName
-
-        await Recipe.updateMany(
-          { name: currentRecipe },
-          { $push: { images: values.id } }
-        )
-        return res.send('Files uploaded.')
-      }
-    })
-  }
-
-
-*/

@@ -3,31 +3,19 @@ const express = require('express')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
-const mongoose = require('mongoose')
 const cors = require('cors')
 const fileupload = require('express-fileupload')
-const mongoSanitize = require('express-mongo-sanitize')
-const session = require('express-session')
-
-//const dbConnection = require('./utils/db')
 
 const indexRouter = require('./routes/index')
 
+const dbConnection = require('./utils/db')
+
 const app = express()
-
-mongoose.set('strictQuery', false)
-
-const mongoDB = 'mongodb://127.0.0.1:27017/testdb'
-
-main().catch((err) => console.error(err))
-async function main() {
-  await mongoose.connect(mongoDB)
-}
 
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
-//dbConnection()
+dbConnection()
 
 app.use(logger('dev'))
 
@@ -45,23 +33,12 @@ app.use(cors())
 
 app.use(fileupload())
 
-app.use(require('sanitize').middleware)
-
-app.use(mongoSanitize())
-
-app.use(
-  session({
-    secret: 'nail stubbly numbness',
-    resave: false,
-    saveUninitialized: true,
-  })
-)
-
 app.use('/', indexRouter)
 
 app.use(function (req, res, next) {
   next(createError(404))
 })
+
 
 // eslint-disable-next-line no-unused-vars
 app.use(function (err, req, res, next) {
